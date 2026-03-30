@@ -16,13 +16,13 @@ router.get('/:scanId/results', ScanController.getScanResults);
 router.get('/history', ScanController.getUserScans);
 
 // Create PR with fixes
-router.post('/:scanId/create-pr', ScanController.createFixPR);
+router.post('/:scanId/create-pr', (req, res) => { const scanId = req.params.scanId; // Validate and sanitize scanId before passing it to ScanController.createFixPR });
 
 // Download fixed files as ZIP
 router.get('/:scanId/download', ScanController.downloadFixedFiles);
 
 // Get file content
-router.get('/:scanId/file/*', ScanController.getFileContent);
+router.get('/:scanId/file/:filePath', (req, res) => { const filePath = req.params.filePath; // Validate and sanitize filePath before passing it to ScanController.getFileContent });
 
 // Update file content
 router.put('/:scanId/file/*', ScanController.updateFileContent);
