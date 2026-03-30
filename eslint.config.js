@@ -1,4 +1,4 @@
-import js from "@eslint/js";
+import js from "@eslint/js"; // Update @eslint/js to the latest version
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
