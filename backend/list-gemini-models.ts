@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const GEMINI_API_KEYS = (process.env.GEMINI_API_KEYS || '').split(',').filter(k => k.trim());
+const GEMINI_API_KEYS = process.env.GEMINI_API_KEYS; // Use a secure secrets management system to store the API key
 
 async function listGeminiModels() {
   console.log('=== Listing Available Gemini Models ===\n');
