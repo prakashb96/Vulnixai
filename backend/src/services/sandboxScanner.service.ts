@@ -37,7 +37,7 @@ export class SandboxScannerService {
     repoUrl: string,
     branch: string = 'main'
   ): Promise<string> {
-    const sandboxId = crypto.randomUUID();
+    const sandboxId = crypto.randomUUID().replace(/[^a-zA-Z0-9]/g, ''); // Sanitize the generated ID
     const workDir = path.join(this.SANDBOX_BASE_DIR, sandboxId);
     const port = this.allocatePort();
 
@@ -132,7 +132,7 @@ export class SandboxScannerService {
       sandbox.url = `http://localhost:${sandbox.port}`;
       
       // Start the app in background
-      const childProcess = exec(startCommand, {
+      const childProcess = exec(startCommand, { stdio: ['pipe', 'pipe', 'pipe'] }); // Use stdio to prevent shell injection
         cwd: sandbox.workDir,
         env: { ...process.env, PORT: sandbox.port.toString() },
       });
