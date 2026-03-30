@@ -21,8 +21,8 @@ export const config = {
     apiUrl: process.env.GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1beta',
   },
   jwt: {
-    secret: process.env.JWT_SECRET || 'your-secret-key',
-    expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as string,
+    secret: process.env.JWT_SECRET, // Ensure the secret is set as an environment variable
+    expiresIn: process.env.JWT_EXPIRES_IN, // Ensure the expiration time is set as an environment variable
   },
   nodeEnv: process.env.NODE_ENV || 'development',
 };
