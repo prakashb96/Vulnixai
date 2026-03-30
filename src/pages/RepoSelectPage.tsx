@@ -44,7 +44,7 @@ const RepoSelectPage = () => {
       setLoading(true);
       setError(null);
       
-      const token = AuthService.getToken();
+      const token = AuthService.getToken(); if (token) { validateToken(token); }
       if (!token) {
         setError("Not authenticated. Please log in again.");
         return;
