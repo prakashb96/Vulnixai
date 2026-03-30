@@ -26,7 +26,19 @@ export class ApiClient {
         AuthService.removeToken();
         window.location.href = '/login';
       }
-      throw new Error(`API Error: ${response.statusText}`);
+      
+      // Try to parse error response body
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: response.statusText };
+      }
+      
+      // Create error with response data attached
+      const error: any = new Error(errorData.error || errorData.message || `API Error: ${response.statusText}`);
+      error.response = { data: errorData, status: response.status };
+      throw error;
     }
 
     return response.json();
@@ -44,7 +56,19 @@ export class ApiClient {
         AuthService.removeToken();
         window.location.href = '/login';
       }
-      throw new Error(`API Error: ${response.statusText}`);
+      
+      // Try to parse error response body
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: response.statusText };
+      }
+      
+      // Create error with response data attached
+      const error: any = new Error(errorData.error || errorData.message || `API Error: ${response.statusText}`);
+      error.response = { data: errorData, status: response.status };
+      throw error;
     }
 
     return response.json();
@@ -62,7 +86,19 @@ export class ApiClient {
         AuthService.removeToken();
         window.location.href = '/login';
       }
-      throw new Error(`API Error: ${response.statusText}`);
+      
+      // Try to parse error response body
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: response.statusText };
+      }
+      
+      // Create error with response data attached
+      const error: any = new Error(errorData.error || errorData.message || `API Error: ${response.statusText}`);
+      error.response = { data: errorData, status: response.status };
+      throw error;
     }
 
     return response.json();
@@ -80,7 +116,19 @@ export class ApiClient {
         AuthService.removeToken();
         window.location.href = '/login';
       }
-      throw new Error(`API Error: ${response.statusText}`);
+      
+      // Try to parse error response body
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: response.statusText };
+      }
+      
+      // Create error with response data attached
+      const error: any = new Error(errorData.error || errorData.message || `API Error: ${response.statusText}`);
+      error.response = { data: errorData, status: response.status };
+      throw error;
     }
 
     return response.json();
@@ -97,7 +145,19 @@ export class ApiClient {
         AuthService.removeToken();
         window.location.href = '/login';
       }
-      throw new Error(`API Error: ${response.statusText}`);
+      
+      // Try to parse error response body
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: response.statusText };
+      }
+      
+      // Create error with response data attached
+      const error: any = new Error(errorData.error || errorData.message || `API Error: ${response.statusText}`);
+      error.response = { data: errorData, status: response.status };
+      throw error;
     }
 
     return response.json();
