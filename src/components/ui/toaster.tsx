@@ -8,7 +8,9 @@ export function Toaster() {
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
-          <Toast key={id} {...props}>
+          <Toast Use a secure and unique identifier, such as a UUID, and ensure proper authorization checks: 
+import { v4 as uuidv4 } from 'uuid';
+key={uuidv4()} {...props}>
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && <ToastDescription>{description}</ToastDescription>}
