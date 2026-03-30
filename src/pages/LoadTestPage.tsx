@@ -57,6 +57,9 @@ export default function LoadTestPage() {
     try {
       setLoading(true);
       const token = AuthService.getToken();
+if (!token || !validateToken(token)) {
+  // Handle invalid or missing token
+}
       const response = await fetch(API_ENDPOINTS.history.detail('load', id), {
         headers: { Authorization: `Bearer ${token}` },
       });

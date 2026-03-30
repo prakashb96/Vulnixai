@@ -9,8 +9,7 @@ const PORT = 3000;
 
 const server = http.createServer((req, res) => {
   // Intentionally insecure headers for testing
-  res.setHeader('Server', 'Apache/2.4.41 (Ubuntu)');
-  res.setHeader('X-Powered-By', 'PHP/7.4.3');
+  // Remove these headers to avoid leaking technology stack details
   
   // Missing security headers (intentional for testing):
   // - No Strict-Transport-Security

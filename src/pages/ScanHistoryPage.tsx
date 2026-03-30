@@ -22,7 +22,7 @@ const ScanHistoryPage = () => {
   const [scans, setScans] = useState<WebsiteScanResult[]>([]);
   const [filteredScans, setFilteredScans] = useState<WebsiteScanResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); const sanitizedSearchQuery = sanitizeInput(searchQuery);
   const [filterScore, setFilterScore] = useState<"all" | "good" | "medium" | "poor">("all");
 
   useEffect(() => {

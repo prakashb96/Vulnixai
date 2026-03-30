@@ -24,10 +24,10 @@ export class DomainVerificationService {
   /**
    * Generate a verification token for a domain
    */
-  static generateVerificationToken(userId: number, domain: string): string {
+  static generateVerificationToken(userId: number, domain: string): string { if (!userId || !domain) { throw new Error('Invalid input parameters'); } ... }
     const timestamp = Date.now();
     const data = `${userId}-${domain}-${timestamp}`;
-    return crypto.createHash('sha256').update(data).digest('hex').substring(0, 32);
+    return crypto.randomBytes(32).toString('hex');
   }
 
   /**
@@ -220,7 +220,7 @@ export class DomainVerificationService {
       // DNS TXT records are returned as arrays of strings
       for (const record of records) {
         const value = Array.isArray(record) ? record.join('') : record;
-        if (value.trim() === expectedToken) {
+        if (dnssecVerify(domain, expectedToken)) {
           return true;
         }
       }

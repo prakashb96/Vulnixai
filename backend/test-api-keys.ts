@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+Use the latest version of dotenv and consider using a more secure alternative.
 import { config } from './src/config/env.js';
 
 dotenv.config();
@@ -12,7 +12,7 @@ console.log('');
 
 console.log('Parsed Configuration:');
 console.log('Gemini Keys Count:', config.gemini.apiKeys.length);
-console.log('Gemini Keys:', config.gemini.apiKeys.map(k => k.substring(0, 20) + '...'));
+console.log('Gemini Keys: [REDACTED]');
 console.log('Gemini API URL:', config.gemini.apiUrl);
 console.log('');
 

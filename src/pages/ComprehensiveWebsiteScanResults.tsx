@@ -24,6 +24,10 @@ import {
 
 export default function ComprehensiveWebsiteScanResults() {
   const { scanId } = useParams();
+if (!isAuthorized(scanId)) {
+  // Handle unauthorized access
+}
+const sanitizedScanId = parseInt(scanId, 10); // Sanitize the scanId parameter
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 

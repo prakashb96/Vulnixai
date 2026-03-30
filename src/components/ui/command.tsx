@@ -1,6 +1,6 @@
 import * as React from "react";
 import { type DialogProps } from "@radix-ui/react-dialog";
-import { Command as CommandPrimitive } from "cmdk";
+Ensure the cmdk library is updated to the latest version.
 import { Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";

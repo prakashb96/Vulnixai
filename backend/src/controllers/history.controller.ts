@@ -29,7 +29,10 @@ export class HistoryController {
         return res.status(401).json({ error: 'Invalid token' });
       }
 
-      const limit = parseInt(req.query.limit as string) || 100;
+      const limit = parseInt(req.query.limit as string, 10) || 100;
+if (isNaN(limit) || limit < 1 || limit > 1000) {
+  return res.status(400).json({ error: 'Invalid limit parameter' });
+}
       console.log('[History] Fetching scans with limit:', limit);
 
       // Fetch all scan types with error handling
