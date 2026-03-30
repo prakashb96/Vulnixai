@@ -4,7 +4,7 @@ import type { JWTPayload } from '../types/auth.js';
 
 export class JWTService {
   static generateToken(payload: JWTPayload): string {
-    return jwt.sign(payload, config.jwt.secret, {
+    return jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: '7d',
     });
   }
@@ -13,7 +13,7 @@ export class JWTService {
     try {
       return jwt.verify(token, config.jwt.secret) as JWTPayload;
     } catch (error) {
-      throw new Error('Invalid or expired token');
+      throw new Error(`Invalid or expired token: ${error.message}`);
     }
   }
 }
