@@ -51,6 +51,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-black overflow-hidden">
       {/* Nav - Show full Navigation if authenticated, otherwise show simple nav */}
+const sanitizedDesc = DOMPurify.sanitize(desc); // Sanitize the desc property
       {isAuthenticated ? (
         <Navigation />
       ) : (
