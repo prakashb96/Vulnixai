@@ -85,9 +85,16 @@ export class WebsiteScanController {
       }
 
       console.log(`Starting penetration test for: ${url}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`User ID: ${userId}`);
 
-      // Perform penetration testing
-      const testResult = await PenetrationTestingService.performPenetrationTest(url);
+      // Perform penetration testing with timeout protection
+      const testPromise = PenetrationTestingService.performPenetrationTest(url);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Penetration test timeout - operation took too long')), 120000) // 2 minute timeout
+      );
+
+      const testResult = await Promise.race([testPromise, timeoutPromise]) as any;
 
       console.log(`Penetration test completed. Vulnerabilities found: ${testResult.vulnerabilitiesFound}`);
 
@@ -98,7 +105,7 @@ export class WebsiteScanController {
         userId,
         url: testResult.url,
         testDate: testResult.testDate,
-        results: testResult.results.map(r => ({
+        results: testResult.results.map((r: any) => ({
           testName: r.testName,
           category: r.category,
           passed: !r.vulnerable,
@@ -111,17 +118,21 @@ export class WebsiteScanController {
           totalTests: testResult.testsPerformed,
           passed: testResult.testsPerformed - testResult.vulnerabilitiesFound,
           failed: testResult.vulnerabilitiesFound,
-          critical: testResult.results.filter(r => r.vulnerable && r.severity === 'critical').length,
-          high: testResult.results.filter(r => r.vulnerable && r.severity === 'high').length,
-          medium: testResult.results.filter(r => r.vulnerable && r.severity === 'medium').length,
-          low: testResult.results.filter(r => r.vulnerable && r.severity === 'low').length,
+          critical: testResult.results.filter((r: any) => r.vulnerable && r.severity === 'critical').length,
+          high: testResult.results.filter((r: any) => r.vulnerable && r.severity === 'high').length,
+          medium: testResult.results.filter((r: any) => r.vulnerable && r.severity === 'medium').length,
+          low: testResult.results.filter((r: any) => r.vulnerable && r.severity === 'low').length,
         },
       });
 
       res.json({ ...testResult, _id: savedTest._id });
     } catch (error: any) {
       console.error('Error performing penetration test:', error);
-      res.status(500).json({ error: error.message || 'Failed to perform penetration test' });
+      console.error('Error stack:', error.stack);
+      res.status(500).json({ 
+        error: error.message || 'Failed to perform penetration test',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
   }
 

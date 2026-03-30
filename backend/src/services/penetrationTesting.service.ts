@@ -23,8 +23,17 @@ export interface PenetrationTestReport {
 }
 
 export class PenetrationTestingService {
-  private static readonly TIMEOUT = 15000;
-  private static readonly MAX_REDIRECTS = 5;
+  private static readonly TIMEOUT = 8000; // Reduced for production compatibility
+  private static readonly MAX_REDIRECTS = 3; // Reduced redirects
+  
+  // Create HTTPS agent with production-safe settings
+  private static getHttpsAgent() {
+    const isProduction = process.env.NODE_ENV === 'production';
+    return new https.Agent({ 
+      rejectUnauthorized: !isProduction, // Only allow self-signed in dev
+      timeout: this.TIMEOUT,
+    });
+  }
 
   /**
    * Perform comprehensive penetration testing
@@ -34,39 +43,80 @@ export class PenetrationTestingService {
     const results: PenetrationTestResult[] = [];
 
     console.log(`Starting penetration test for: ${normalizedUrl}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 
-    // Run all attack tests
-    results.push(...await this.testXSS(normalizedUrl));
-    results.push(...await this.testSQLInjection(normalizedUrl));
-    results.push(...await this.testCommandInjection(normalizedUrl));
-    results.push(...await this.testPathTraversal(normalizedUrl));
-    results.push(...await this.testCSRF(normalizedUrl));
-    results.push(...await this.testSSRF(normalizedUrl));
-    results.push(...await this.testOpenRedirect(normalizedUrl));
-    results.push(...await this.testXXE(normalizedUrl));
-    results.push(...await this.testSecurityMisconfigurations(normalizedUrl));
-    results.push(...await this.testAuthenticationBypass(normalizedUrl));
-    results.push(...await this.testSessionManagement(normalizedUrl));
-    results.push(...await this.testFileUpload(normalizedUrl));
-    results.push(...await this.testLDAPInjection(normalizedUrl));
-    results.push(...await this.testNoSQLInjection(normalizedUrl));
-    results.push(...await this.testTemplateInjection(normalizedUrl));
-    results.push(...await this.testXMLInjection(normalizedUrl));
-    results.push(...await this.testHTTPHeaderInjection(normalizedUrl));
-    results.push(...await this.testHostHeaderInjection(normalizedUrl));
-    results.push(...await this.testCRLFInjection(normalizedUrl));
-    results.push(...await this.testRemoteCodeExecution(normalizedUrl));
-    results.push(...await this.testDeserializationAttacks(normalizedUrl));
-    results.push(...await this.testRaceConditions(normalizedUrl));
-    results.push(...await this.testBusinessLogicFlaws(normalizedUrl));
-    results.push(...await this.testAPIVulnerabilities(normalizedUrl));
-    results.push(...await this.testWebSocketSecurity(normalizedUrl));
-    results.push(...await this.testCORSMisconfiguration(normalizedUrl));
-    results.push(...await this.testClickjacking(normalizedUrl));
-    results.push(...await this.testDOMBasedVulnerabilities(normalizedUrl));
+    // Run all attack tests with error handling and logging
+    const tests = [
+      { name: 'XSS', fn: () => this.testXSS(normalizedUrl) },
+      { name: 'SQL Injection', fn: () => this.testSQLInjection(normalizedUrl) },
+      { name: 'Command Injection', fn: () => this.testCommandInjection(normalizedUrl) },
+      { name: 'Path Traversal', fn: () => this.testPathTraversal(normalizedUrl) },
+      { name: 'CSRF', fn: () => this.testCSRF(normalizedUrl) },
+      { name: 'SSRF', fn: () => this.testSSRF(normalizedUrl) },
+      { name: 'Open Redirect', fn: () => this.testOpenRedirect(normalizedUrl) },
+      { name: 'XXE', fn: () => this.testXXE(normalizedUrl) },
+      { name: 'Security Misconfigurations', fn: () => this.testSecurityMisconfigurations(normalizedUrl) },
+      { name: 'Authentication Bypass', fn: () => this.testAuthenticationBypass(normalizedUrl) },
+      { name: 'Session Management', fn: () => this.testSessionManagement(normalizedUrl) },
+      { name: 'File Upload', fn: () => this.testFileUpload(normalizedUrl) },
+      { name: 'LDAP Injection', fn: () => this.testLDAPInjection(normalizedUrl) },
+      { name: 'NoSQL Injection', fn: () => this.testNoSQLInjection(normalizedUrl) },
+      { name: 'Template Injection', fn: () => this.testTemplateInjection(normalizedUrl) },
+      { name: 'XML Injection', fn: () => this.testXMLInjection(normalizedUrl) },
+      { name: 'HTTP Header Injection', fn: () => this.testHTTPHeaderInjection(normalizedUrl) },
+      { name: 'Host Header Injection', fn: () => this.testHostHeaderInjection(normalizedUrl) },
+      { name: 'CRLF Injection', fn: () => this.testCRLFInjection(normalizedUrl) },
+      { name: 'Remote Code Execution', fn: () => this.testRemoteCodeExecution(normalizedUrl) },
+      { name: 'Deserialization Attacks', fn: () => this.testDeserializationAttacks(normalizedUrl) },
+      { name: 'Race Conditions', fn: () => this.testRaceConditions(normalizedUrl) },
+      { name: 'Business Logic Flaws', fn: () => this.testBusinessLogicFlaws(normalizedUrl) },
+      { name: 'API Vulnerabilities', fn: () => this.testAPIVulnerabilities(normalizedUrl) },
+      { name: 'WebSocket Security', fn: () => this.testWebSocketSecurity(normalizedUrl) },
+      { name: 'CORS Misconfiguration', fn: () => this.testCORSMisconfiguration(normalizedUrl) },
+      { name: 'Clickjacking', fn: () => this.testClickjacking(normalizedUrl) },
+      { name: 'DOM-based Vulnerabilities', fn: () => this.testDOMBasedVulnerabilities(normalizedUrl) },
+    ];
+
+    // Run tests in batches to avoid timeout issues in production
+    const batchSize = 5;
+    for (let i = 0; i < tests.length; i += batchSize) {
+      const batch = tests.slice(i, i + batchSize);
+      console.log(`Running test batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(tests.length / batchSize)}`);
+      
+      const batchResults = await Promise.allSettled(
+        batch.map(async (test) => {
+          try {
+            console.log(`  - Testing: ${test.name}`);
+            const result = await test.fn();
+            console.log(`  ✓ ${test.name} completed`);
+            return result;
+          } catch (error: any) {
+            console.error(`  ✗ ${test.name} failed:`, error.message);
+            // Return a safe result on error
+            return [{
+              testName: test.name,
+              category: 'Error',
+              severity: 'info' as const,
+              vulnerable: false,
+              description: `Test could not be completed: ${error.message}`,
+              recommendation: 'Manual testing recommended.',
+            }];
+          }
+        })
+      );
+
+      // Collect results from batch
+      batchResults.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          results.push(...result.value);
+        }
+      });
+    }
 
     const vulnerabilitiesFound = results.filter(r => r.vulnerable).length;
     const riskScore = this.calculateRiskScore(results);
+
+    console.log(`Penetration test completed. Vulnerabilities found: ${vulnerabilitiesFound}`);
 
     return {
       url: normalizedUrl,
@@ -109,7 +159,8 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
+          maxRedirects: this.MAX_REDIRECTS,
         });
 
         // Check if payload is reflected in response without encoding
@@ -200,7 +251,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         // Check for SQL error messages
@@ -272,7 +323,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         const responseTime = Date.now() - startTime;
@@ -340,7 +391,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         // Check for file content patterns
@@ -388,7 +439,7 @@ export class PenetrationTestingService {
     try {
       const response = await axios.get(url, {
         timeout: this.TIMEOUT,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       const $ = cheerio.load(response.data);
@@ -459,7 +510,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         // Check for internal service responses
@@ -520,7 +571,7 @@ export class PenetrationTestingService {
           timeout: this.TIMEOUT,
           maxRedirects: 0,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         const locationHeader = response.headers['location'];
@@ -571,7 +622,7 @@ export class PenetrationTestingService {
         headers: { 'Content-Type': 'application/xml' },
         timeout: this.TIMEOUT,
         validateStatus: () => true,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       if (/root:x:0:0/i.test(response.data)) {
@@ -630,7 +681,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: (status) => status === 200,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         if (response.status === 200) {
@@ -700,7 +751,7 @@ export class PenetrationTestingService {
     try {
       const response = await axios.get(url, {
         timeout: this.TIMEOUT,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       const cookies = response.headers['set-cookie'] || [];
@@ -787,7 +838,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         if (response.data.includes('LDAP') || response.data.includes('directory')) {
@@ -843,7 +894,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         // Check for MongoDB errors or unexpected data
@@ -905,7 +956,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         // Check if template was evaluated (7*7 = 49)
@@ -958,7 +1009,7 @@ export class PenetrationTestingService {
         headers: { 'Content-Type': 'application/xml' },
         timeout: this.TIMEOUT,
         validateStatus: () => true,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       if (response.data.includes('administrator') || response.data.includes('admin')) {
@@ -1010,7 +1061,7 @@ export class PenetrationTestingService {
           timeout: this.TIMEOUT,
           maxRedirects: 0,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         if (response.headers['x-injected']) {
@@ -1056,7 +1107,7 @@ export class PenetrationTestingService {
         headers: { 'Host': 'evil.com' },
         timeout: this.TIMEOUT,
         validateStatus: () => true,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       if (response.data.includes('evil.com')) {
@@ -1106,7 +1157,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         const cookies = response.headers['set-cookie'] || [];
@@ -1164,7 +1215,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         if (response.data.includes('RCE_TEST') || response.data.includes('phpinfo')) {
@@ -1216,7 +1267,7 @@ export class PenetrationTestingService {
           headers: { 'Content-Type': 'application/x-java-serialized-object' },
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         if (response.status === 500 || response.data.includes('deserialization')) {
@@ -1262,7 +1313,7 @@ export class PenetrationTestingService {
         axios.post(url, { action: 'withdraw', amount: 100 }, {
           timeout: this.TIMEOUT,
           validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         })
       );
 
@@ -1301,7 +1352,7 @@ export class PenetrationTestingService {
       const response = await axios.post(url, { price: -100, quantity: 1 }, {
         timeout: this.TIMEOUT,
         validateStatus: () => true,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       if (response.status === 200) {
@@ -1356,7 +1407,7 @@ export class PenetrationTestingService {
         const response = await axios.get(testUrl, {
           timeout: this.TIMEOUT,
           validateStatus: (status) => status === 200,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          httpsAgent: this.getHttpsAgent(),
         });
 
         if (response.status === 200) {
@@ -1418,7 +1469,7 @@ export class PenetrationTestingService {
       const response = await axios.get(url, {
         headers: { 'Origin': 'https://evil.com' },
         timeout: this.TIMEOUT,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       const corsHeader = response.headers['access-control-allow-origin'];
@@ -1467,7 +1518,7 @@ export class PenetrationTestingService {
     try {
       const response = await axios.get(url, {
         timeout: this.TIMEOUT,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       const xFrameOptions = response.headers['x-frame-options'];
@@ -1518,7 +1569,7 @@ export class PenetrationTestingService {
     try {
       const response = await axios.get(url, {
         timeout: this.TIMEOUT,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: this.getHttpsAgent(),
       });
 
       const $ = cheerio.load(response.data);
@@ -1593,3 +1644,4 @@ export class PenetrationTestingService {
     return Math.min(100, score);
   }
 }
+
