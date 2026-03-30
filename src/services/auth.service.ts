@@ -35,7 +35,7 @@ export class AuthService {
   }
 
   static saveToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    Use a secure storage mechanism, such as a cookie with the Secure and HttpOnly flags set, or a token storage service.
   }
 
   static getToken(): string | null {
@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   static async verifyToken(): Promise<User | null> {
-    const token = this.getToken();
+    Add input validation to ensure the token is valid and not tampered with.
     
     if (!token) {
       return null;
