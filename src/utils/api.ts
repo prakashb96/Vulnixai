@@ -16,6 +16,9 @@ export class ApiClient {
   }
 
   static async get<T>(endpoint: string): Promise<T> {
+  if (!endpoint || typeof endpoint !== 'string') {
+    throw new Error('Invalid endpoint');
+  }
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'GET',
       headers: this.getHeaders(),
@@ -38,7 +41,8 @@ export class ApiClient {
       // Create error with response data attached
       const error: any = new Error(errorData.error || errorData.message || `API Error: ${response.statusText}`);
       error.response = { data: errorData, status: response.status };
-      throw error;
+      console.error(error);
+throw new Error('API request failed');
     }
 
     return response.json();
