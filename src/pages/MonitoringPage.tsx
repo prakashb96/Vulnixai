@@ -13,7 +13,7 @@ import { toast } from "@/hooks/use-toast";
 
 interface MonitoredSite {
   id: string;
-  url: string;
+  url: string; // Add validation and sanitization for the 'url' property
   name: string;
   status: "up" | "down" | "degraded";
   responseTime: number;
