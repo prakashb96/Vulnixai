@@ -20,7 +20,7 @@ const frontendUrl = config.frontendUrl.replace(/\/$/, '');
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(new Error('Origin is required'), false);
     
     // Normalize the origin by removing trailing slash
     const normalizedOrigin = origin.replace(/\/$/, '');
