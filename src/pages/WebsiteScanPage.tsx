@@ -22,7 +22,7 @@ export default function WebsiteScanPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [url, setUrl] = useState(searchParams.get('url') || '');
+  const [url, setUrl] = useState(decodeURIComponent(searchParams.get('url') || ''));
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState<ScanProgress>({
     stage: '',
