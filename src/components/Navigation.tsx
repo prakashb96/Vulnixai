@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserProfile } from "./UserProfile";
+import logo from "/image.png";
 
 export const Navigation = () => {
   const navigate = useNavigate();
@@ -15,9 +16,10 @@ export const Navigation = () => {
         <div className="flex items-center gap-8">
           <button
             onClick={() => navigate("/")}
-            className="font-medium text-base text-foreground hover:text-primary transition-colors"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            VulnixAI
+            <img src={logo} alt="VulnixAI logo" className="h-8 w-auto" />
+            <span className="font-medium text-base text-foreground">VulnixAI</span>
           </button>
           {isAuthenticated && (
             <div className="flex items-center gap-6">
