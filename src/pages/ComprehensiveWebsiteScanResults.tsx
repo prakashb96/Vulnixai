@@ -31,7 +31,6 @@ export default function ComprehensiveWebsiteScanResults() {
   const [securityScan, setSecurityScan] = useState<any>(null);
   const [pentestResults, setPentestResults] = useState<any>(null);
   const [loadTestResults, setLoadTestResults] = useState<any>(null);
-  const [rateLimitResults, setRateLimitResults] = useState<any>(null);
   const [resilienceResults, setResilienceResults] = useState<any>(null);
 
   useEffect(() => {
@@ -67,11 +66,6 @@ export default function ComprehensiveWebsiteScanResults() {
         failedRequests: 5,
         averageResponseTime: 145,
         requestsPerSecond: 10
-      });
-
-      setRateLimitResults({
-        rateLimitDetected: true,
-        requestsBeforeLimit: 100
       });
 
       setResilienceResults({
@@ -315,7 +309,6 @@ export default function ComprehensiveWebsiteScanResults() {
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="pentest">Penetration</TabsTrigger>
             <TabsTrigger value="load">Load Test</TabsTrigger>
-            <TabsTrigger value="ratelimit">Rate Limit</TabsTrigger>
             <TabsTrigger value="resilience">Resilience</TabsTrigger>
           </TabsList>
 
@@ -484,51 +477,6 @@ export default function ComprehensiveWebsiteScanResults() {
                       <div className="text-xs text-muted-foreground">Success Rate</div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Rate Limit Tab */}
-          <TabsContent value="ratelimit" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Rate Limiting Test</CardTitle>
-                <CardDescription>
-                  DDoS protection analysis
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                    <div>
-                      <div className="font-medium">Rate Limiting Detected</div>
-                      <div className="text-sm text-muted-foreground">
-                        {rateLimitResults?.rateLimitDetected ? 'Yes - Good protection' : 'No - Consider implementing'}
-                      </div>
-                    </div>
-                    {rateLimitResults?.rateLimitDetected ? (
-                      <CheckCircle2 className="h-8 w-8 text-green-500" />
-                    ) : (
-                      <XCircle className="h-8 w-8 text-red-500" />
-                    )}
-                  </div>
-
-                  {rateLimitResults?.rateLimitDetected && (
-                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold">{rateLimitResults?.requestsBeforeLimit || 0}</div>
-                      <div className="text-xs text-muted-foreground">Requests Before Limit</div>
-                    </div>
-                  )}
-
-                  <Alert>
-                    <Info className="h-4 w-4" />
-                    <AlertDescription>
-                      {rateLimitResults?.rateLimitDetected 
-                        ? 'Your site has rate limiting enabled, which helps protect against DDoS attacks.'
-                        : 'Consider implementing rate limiting to protect against abuse and DDoS attacks.'}
-                    </AlertDescription>
-                  </Alert>
                 </div>
               </CardContent>
             </Card>

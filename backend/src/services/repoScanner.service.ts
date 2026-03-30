@@ -14,7 +14,6 @@ export class RepoScannerService {
   private static readonly GITHUB_API_URL = 'https://api.github.com';
   private static readonly MAX_FILES_PER_BATCH = 3; // Reduced from 5 to 3
   private static readonly MAX_CHARS_PER_FILE = 1500; // Reduced from 2500 to 1500
-  private static readonly BATCH_DELAY_MS = 20000; // 20 seconds between batches
 
   static async scanRepository(
     scanId: string,
@@ -294,10 +293,9 @@ export class RepoScannerService {
         // Continue with next batch
       }
 
-      // Longer delay between batches to respect rate limits (20 seconds to allow token window to reset)
+      // Small delay between batches to avoid overwhelming the system
       if (i + this.MAX_FILES_PER_BATCH < files.length) {
-        await this.addLog(scanId, 'info', 'Waiting for rate limit window (20s)...');
-        await new Promise(resolve => setTimeout(resolve, 20000)); // 20 second delay
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
       }
     }
 
@@ -311,7 +309,7 @@ export class RepoScannerService {
   }
 
   /**
-   * Analyze with retry logic for rate limits
+   * Analyze with retry logic - relies on AI service's built-in key rotation
    */
   private static async analyzeWithRetry(
     files: Array<{ path: string; content: string }>,
@@ -327,24 +325,15 @@ export class RepoScannerService {
       } catch (error: any) {
         lastError = error;
 
-        // Check if it's a rate limit error
-        if (error.message && error.message.includes('rate_limit_exceeded')) {
-          // Extract wait time from error message
-          const waitMatch = error.message.match(/try again in ([\d.]+)s/);
-          const waitTime = waitMatch ? parseFloat(waitMatch[1]) : 20;
-          
-          if (attempt < maxRetries) {
-            const waitSeconds = Math.ceil(waitTime) + 2; // Add 2 second buffer
-            await this.addLog(
-              scanId,
-              'warning',
-              `Rate limit hit on batch ${batchNumber}, waiting ${waitSeconds}s before retry ${attempt}/${maxRetries}...`
-            );
-            await new Promise(resolve => setTimeout(resolve, waitSeconds * 1000));
-          }
-        } else {
-          // Non-rate-limit error, don't retry
-          throw error;
+        // Log the error and retry
+        if (attempt < maxRetries) {
+          await this.addLog(
+            scanId,
+            'warning',
+            `Batch ${batchNumber} attempt ${attempt}/${maxRetries} failed: ${error.message} - retrying...`
+          );
+          // Small delay before retry (AI service handles key rotation)
+          await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
         }
       }
     }

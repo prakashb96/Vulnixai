@@ -279,56 +279,6 @@ export class LoadTestingService {
   }
 
   /**
-   * Test rate limiting specifically
-   */
-  static async testRateLimiting(url: string): Promise<{
-    rateLimitDetected: boolean;
-    requestsBeforeLimit: number;
-    rateLimitStatus: number;
-    rateLimitHeaders: Record<string, string>;
-  }> {
-    let requestsBeforeLimit = 0;
-    let rateLimitDetected = false;
-    let rateLimitStatus = 0;
-    let rateLimitHeaders: Record<string, string> = {};
-
-    // Send rapid requests until rate limited
-    for (let i = 0; i < 200; i++) {
-      try {
-        const response = await axios.get(url, {
-          timeout: 5000,
-          validateStatus: () => true,
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-        });
-
-        if (response.status === 429) {
-          rateLimitDetected = true;
-          rateLimitStatus = 429;
-          rateLimitHeaders = {
-            'x-ratelimit-limit': response.headers['x-ratelimit-limit'] || 'N/A',
-            'x-ratelimit-remaining': response.headers['x-ratelimit-remaining'] || 'N/A',
-            'x-ratelimit-reset': response.headers['x-ratelimit-reset'] || 'N/A',
-            'retry-after': response.headers['retry-after'] || 'N/A',
-          };
-          break;
-        }
-
-        requestsBeforeLimit++;
-        await this.sleep(10); // Small delay
-      } catch (error) {
-        break;
-      }
-    }
-
-    return {
-      rateLimitDetected,
-      requestsBeforeLimit,
-      rateLimitStatus,
-      rateLimitHeaders,
-    };
-  }
-
-  /**
    * Test site resilience with gradual load increase
    */
   static async testResilience(url: string): Promise<{

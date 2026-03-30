@@ -89,11 +89,7 @@ export default function WebsiteScanPage() {
         requestsPerSecond: 10
       });
 
-      // Stage 4: Rate Limiting Test
-      setScanProgress({ stage: 'ratelimit', progress: 70, message: 'Testing rate limiting...' });
-      const rateLimitResult = await websiteScanService.testRateLimiting(url);
-
-      // Stage 5: Resilience Testing
+      // Stage 4: Resilience Testing
       setScanProgress({ stage: 'resilience', progress: 85, message: 'Testing resilience...' });
       const resilienceResult = await websiteScanService.testResilience(url);
 
@@ -223,10 +219,6 @@ export default function WebsiteScanPage() {
                         {scanProgress.progress >= 70 ? <CheckCircle2 className="h-3 w-3" /> : scanProgress.progress >= 50 ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
                         Load Test
                       </div>
-                      <div className={`flex items-center gap-1 ${scanProgress.progress >= 70 ? 'text-green-500' : 'text-muted-foreground'}`}>
-                        {scanProgress.progress >= 85 ? <CheckCircle2 className="h-3 w-3" /> : scanProgress.progress >= 70 ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
-                        Rate Limit
-                      </div>
                       <div className={`flex items-center gap-1 ${scanProgress.progress >= 85 ? 'text-green-500' : 'text-muted-foreground'}`}>
                         {scanProgress.progress >= 100 ? <CheckCircle2 className="h-3 w-3" /> : scanProgress.progress >= 85 ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
                         Resilience
@@ -306,9 +298,9 @@ export default function WebsiteScanPage() {
                       </ul>
                     </div>
                     <div className="space-y-2">
-                      <h4 className="font-medium text-primary">Resilience & Rate Limiting</h4>
+                      <h4 className="font-medium text-primary">Resilience Testing</h4>
                       <ul className="text-muted-foreground space-y-1">
-                        <li>• Rate limiting detection</li>
+                        <li>• Load capacity analysis</li>
                         <li>• DDoS protection</li>
                         <li>• Breaking point analysis</li>
                         <li>• Scalability assessment</li>

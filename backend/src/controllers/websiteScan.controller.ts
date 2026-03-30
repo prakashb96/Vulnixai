@@ -198,45 +198,6 @@ export class WebsiteScanController {
     }
   }
 
-  static async testRateLimiting(req: Request, res: Response) {
-    try {
-      const { url } = req.body;
-      const userId = req.user?.userId;
-
-      if (!userId) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-
-      if (!url) {
-        return res.status(400).json({ error: 'URL is required' });
-      }
-
-      // Check if domain is verified
-      const isVerified = await DomainVerificationService.isDomainVerified(userId, url);
-      
-      if (!isVerified) {
-        const domain = DomainVerificationService.extractDomain(url);
-        return res.status(403).json({ 
-          error: 'Domain not verified',
-          message: `You must verify ownership of ${domain} before testing rate limiting.`,
-          domain,
-          requiresVerification: true
-        });
-      }
-
-      console.log(`Testing rate limiting for: ${url}`);
-
-      const { LoadTestingService } = await import('../services/loadTesting.service');
-
-      const testResult = await LoadTestingService.testRateLimiting(url);
-
-      res.json(testResult);
-    } catch (error: any) {
-      console.error('Error testing rate limiting:', error);
-      res.status(500).json({ error: error.message || 'Failed to test rate limiting' });
-    }
-  }
-
   static async testResilience(req: Request, res: Response) {
     try {
       const { url } = req.body;
@@ -516,6 +477,49 @@ export class WebsiteScanController {
     } catch (error: any) {
       console.error('Error adding owned domain:', error);
       res.status(500).json({ error: error.message || 'Failed to add owned domain' });
+    }
+  }
+
+  static async getApiHealth(req: Request, res: Response) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const { AIService } = await import('../services/ai.service.js');
+      const stats = AIService.getRotationStats();
+
+      res.json({
+        timestamp: new Date(),
+        providers: stats,
+        status: (stats.groq.healthyKeys > 0 || stats.gemini.healthyKeys > 0) ? 'healthy' : 'degraded',
+      });
+    } catch (error: any) {
+      console.error('Error fetching API health:', error);
+      res.status(500).json({ error: 'Failed to fetch API health' });
+    }
+  }
+
+  static async resetApiKeys(req: Request, res: Response) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const { AIService } = await import('../services/ai.service.js');
+      AIService.resetFailureCounts();
+
+      res.json({
+        success: true,
+        message: 'API key failure counts have been reset',
+      });
+    } catch (error: any) {
+      console.error('Error resetting API keys:', error);
+      res.status(500).json({ error: 'Failed to reset API keys' });
     }
   }
 }
