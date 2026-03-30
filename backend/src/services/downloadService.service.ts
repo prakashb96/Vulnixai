@@ -4,7 +4,7 @@ import { IVulnerability } from '../db/models/Scan.model.js';
 import axios from 'axios';
 
 export class DownloadService {
-  private static readonly GITHUB_API_URL = 'https://api.github.com';
+  private static readonly GITHUB_API_URL = process.env.GITHUB_API_URL || 'https://api.github.com';
 
   /**
    * Download fixed files as ZIP
