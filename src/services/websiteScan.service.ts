@@ -129,11 +129,15 @@ export const websiteScanService = {
     });
   },
 
-  async testRateLimiting(url: string) {
-    return ApiClient.post('/api/website-scan/test-ratelimit', { url });
-  },
-
   async testResilience(url: string) {
     return ApiClient.post('/api/website-scan/test-resilience', { url });
+  },
+
+  async getApiHealth() {
+    return ApiClient.get('/api/website-scan/api-health');
+  },
+
+  async resetApiKeys() {
+    return ApiClient.post('/api/website-scan/api-reset');
   },
 };

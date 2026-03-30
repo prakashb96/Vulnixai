@@ -26,11 +26,12 @@ router.post('/pentest', WebsiteScanController.penetrationTest);
 // Load testing (requires verified domain) - STRESS TESTING
 router.post('/loadtest', WebsiteScanController.loadTest);
 
-// Rate limiting test (requires verified domain)
-router.post('/test-ratelimit', WebsiteScanController.testRateLimiting);
-
 // Resilience test (requires verified domain)
 router.post('/test-resilience', WebsiteScanController.testResilience);
+
+// API Health Monitoring
+router.get('/api-health', WebsiteScanController.getApiHealth);
+router.post('/api-reset', WebsiteScanController.resetApiKeys);
 
 // Get scan history
 router.get('/history', WebsiteScanController.getScanHistory);

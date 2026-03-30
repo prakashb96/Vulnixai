@@ -44,7 +44,7 @@ export default function LoadTestPage() {
   const [testing, setTesting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<LoadTestResult | null>(null);
-  const [testType, setTestType] = useState<'load' | 'ratelimit' | 'resilience'>('load');
+  const [testType, setTestType] = useState<'load' | 'resilience'>('load');
   const [viewMode, setViewMode] = useState<'new' | 'view'>(resultId ? 'view' : 'new');
 
   useEffect(() => {
@@ -143,41 +143,6 @@ export default function LoadTestPage() {
           variant: 'destructive',
         });
       }
-    } finally {
-      setTesting(false);
-    }
-  };
-
-  const handleRateLimitTest = async () => {
-    if (!url.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a URL',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    try {
-      setTesting(true);
-
-      const response: any = await ApiClient.post('/api/website-scan/test-ratelimit', { url });
-
-      toast({
-        title: 'Rate Limit Test Complete',
-        description: response.rateLimitDetected 
-          ? `Rate limiting detected after ${response.requestsBeforeLimit} requests`
-          : 'No rate limiting detected',
-      });
-
-      // Show results in alert
-      alert(JSON.stringify(response, null, 2));
-    } catch (error: any) {
-      toast({
-        title: 'Test Failed',
-        description: error.response?.data?.error || 'Failed to test rate limiting',
-        variant: 'destructive',
-      });
     } finally {
       setTesting(false);
     }
@@ -383,9 +348,8 @@ export default function LoadTestPage() {
                 </div>
 
                 <Tabs value={testType} onValueChange={(v) => setTestType(v as any)}>
-                  <TabsList className="grid w-full grid-cols-3">
+                  <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="load">Load Test</TabsTrigger>
-                    <TabsTrigger value="ratelimit">Rate Limit</TabsTrigger>
                     <TabsTrigger value="resilience">Resilience</TabsTrigger>
                   </TabsList>
 
@@ -460,29 +424,6 @@ export default function LoadTestPage() {
                         <>
                           <Zap className="mr-2 h-4 w-4" />
                           Start Load Test
-                        </>
-                      )}
-                    </Button>
-                  </TabsContent>
-
-                  <TabsContent value="ratelimit" className="space-y-4 mt-6">
-                    <p className="text-sm text-muted-foreground">
-                      This test sends rapid requests to check if rate limiting is configured.
-                    </p>
-                    <Button
-                      onClick={handleRateLimitTest}
-                      disabled={testing || !url.trim()}
-                      className="w-full"
-                    >
-                      {testing ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Testing...
-                        </>
-                      ) : (
-                        <>
-                          <Shield className="mr-2 h-4 w-4" />
-                          Test Rate Limiting
                         </>
                       )}
                     </Button>
