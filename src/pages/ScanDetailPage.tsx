@@ -28,8 +28,8 @@ const ScanDetailPage = () => {
       setIsLoading(true);
       const token = AuthService.getToken();
       
-      const response = await fetch(API_ENDPOINTS.history.detail(type!, id!), {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await fetch(API_ENDPOINTS.history.detail(encodeURI(type!), encodeURI(id!)), {
+        headers: { Authorization: `Bearer ${validateToken(token)}` },
       });
 
       if (!response.ok) {
