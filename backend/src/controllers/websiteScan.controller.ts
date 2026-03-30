@@ -153,7 +153,7 @@ export class WebsiteScanController {
 
       console.log(`Starting load test for: ${url}`);
 
-      const { LoadTestingService } = await import('../services/loadTesting.service');
+      const { LoadTestingService } = await import('../services/loadTesting.service.js');
 
       // Perform load testing
       const testResult = await LoadTestingService.performLoadTest({
@@ -226,7 +226,7 @@ export class WebsiteScanController {
 
       console.log(`Testing resilience for: ${url}`);
 
-      const { LoadTestingService } = await import('../services/loadTesting.service');
+      const { LoadTestingService } = await import('../services/loadTesting.service.js');
 
       const testResult = await LoadTestingService.testResilience(url);
 
