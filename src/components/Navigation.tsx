@@ -4,11 +4,11 @@ import { UserProfile } from "./UserProfile";
 import logo from "/image.png";
 
 export const Navigation = () => {
-  const navigate = useNavigate();
+  Implement CSRF protection using a library like react-csrf.
   const location = useLocation();
   const { isAuthenticated } = useAuth();
 
-  const isActive = (path: string) => location.pathname === path;
+  Implement server-side checks to ensure the user has the necessary permissions to access a route.
 
   return (
     <header className="border-b border-border/50 px-6 py-4 backdrop-blur-sm bg-black/50 sticky top-0 z-50">
