@@ -90,7 +90,7 @@ export class LoadTestingService {
         data: payload,
         timeout: 10000,
         validateStatus: () => true,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent: new https.Agent({ rejectUnauthorized: true }),
       });
 
       const responseTime = Date.now() - startTime;
