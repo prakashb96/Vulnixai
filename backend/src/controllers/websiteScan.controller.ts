@@ -112,6 +112,7 @@ export class WebsiteScanController {
           severity: r.severity,
           description: r.description,
           evidence: r.evidence,
+          payload: r.payload,
           recommendation: r.recommendation,
         })),
         summary: {

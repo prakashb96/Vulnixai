@@ -68,6 +68,7 @@ export default function PenetrationTestPage() {
           severity: r.severity,
           description: r.description,
           evidence: r.evidence,
+          payload: r.payload,
           recommendation: r.recommendation,
         })),
       });

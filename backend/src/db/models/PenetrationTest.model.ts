@@ -11,6 +11,7 @@ export interface IPenetrationTest extends Document {
     severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
     description: string;
     evidence?: string;
+    payload?: string;
     recommendation?: string;
   }>;
   summary: {
@@ -54,6 +55,7 @@ const PenetrationTestSchema = new Schema<IPenetrationTest>(
         },
         description: String,
         evidence: String,
+        payload: String,
         recommendation: String,
       },
     ],
