@@ -25,7 +25,14 @@ export class ScanController {
       }
 
       // Get user's GitHub access token
-      const githubAccessToken = await UserService.getGithubAccessToken(payload.userId);
+      try {
+  const githubAccessToken = await UserService.getGithubAccessToken(payload.userId);
+  if (!githubAccessToken) {
+    return res.status(401).json({ error: 'GitHub access token not found. Please re-authenticate.' });
+  }
+} catch (error) {
+  return res.status(401).json({ error: 'Invalid GitHub access token' });
+}
       
       if (!githubAccessToken) {
         return res.status(401).json({ error: 'GitHub access token not found. Please re-authenticate.' });

@@ -16,10 +16,10 @@ export interface GroqAnalysisResult {
 
 export class GroqService {
   private static readonly API_URL = config.groq.apiUrl;
-  private static readonly API_KEY = config.groq.apiKey;
+  private static readonly API_KEY = process.env.GROQ_API_KEY;
 
   static async analyzeCode(files: Array<{ path: string; content: string }>): Promise<GroqAnalysisResult> {
-    if (!this.API_KEY) {
+    if (!this.API_KEY || !this.validateApiKey(this.API_KEY)) {
       throw new Error('Groq API key not configured');
     }
 

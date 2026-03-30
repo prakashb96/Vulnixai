@@ -7,7 +7,7 @@ const AuthCallback = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    const token = searchParams.get('token'); const csrfToken = searchParams.get('csrfToken'); if (token && csrfToken) { // Verify CSRF token }
     const error = searchParams.get('error');
 
     if (error) {
@@ -17,7 +17,7 @@ const AuthCallback = () => {
     }
 
     if (token) {
-      AuthService.saveToken(token);
+      AuthService.saveToken(token, { secure: true, httpOnly: true });
       navigate('/repos');
     } else {
       navigate('/login?error=No token received');

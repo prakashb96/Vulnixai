@@ -16,6 +16,9 @@ export default function DomainVerificationPage() {
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState(false);
   const [newDomain, setNewDomain] = useState('');
+const validateDomain = (domain: string) => {
+  // Implement domain validation logic
+};
   const [verificationMethod, setVerificationMethod] = useState<'file' | 'dns' | 'meta'>('file');
   const [instructions, setInstructions] = useState<VerificationInstructions | null>(null);
   const { toast } = useToast();

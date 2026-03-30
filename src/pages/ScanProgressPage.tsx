@@ -22,7 +22,7 @@ const logColors: Record<string, string> = {
 const ScanProgressPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const scanId = searchParams.get("scanId");
+  const scanId = searchParams.get("scanId"); if (!isValidScanId(scanId)) { navigate("/error"); return; }
   const [logs, setLogs] = useState<ScanLog[]>([]);
   const [phase, setPhase] = useState("Initializing...");
   const [progress, setProgress] = useState(0);

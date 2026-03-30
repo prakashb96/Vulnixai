@@ -5,8 +5,8 @@ import '../types/auth.js'; // Import to extend Express Request type
 export class MonitoringController {
   static async addSite(req: Request, res: Response) {
     try {
-      const { url, name, checkInterval } = req.body;
-      const userId = req.user?.userId;
+      const { url, name, checkInterval } = req.body; if (!url || !name || !checkInterval) { return res.status(400).json({ error: 'Invalid input parameters' }); }
+      const userId = req.user?.userId; if (!userId || !await MonitoringService.hasPermissionToAccessSite(userId, url)) { return res.status(403).json({ error: 'Forbidden' }); }
 
       if (!userId) {
         return res.status(401).json({ error: 'Unauthorized' });

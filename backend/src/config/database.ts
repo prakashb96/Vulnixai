@@ -3,7 +3,7 @@ import { config } from './env.js';
 
 export const connectDatabase = async () => {
   try {
-    const mongoUri = config.mongoUri || 'mongodb://localhost:27017/vulnixai';
+    const mongoUri = process.env.MONGO_URI;
     
     console.log('🔄 Connecting to MongoDB...');
     console.log(`📍 URI: ${mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//*****:*****@')}`); // Hide credentials in logs

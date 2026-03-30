@@ -7,7 +7,7 @@ export class UserService {
    */
   static async createOrUpdateUser(githubUser: GitHubUser, accessToken?: string): Promise<IUser> {
     try {
-      const existingUser = await User.findOne({ githubId: githubUser.id });
+      const existingUser = await User.findOne({ githubId: validateGithubId(githubUser.id) });
 
       if (existingUser) {
         // Update existing user
@@ -90,7 +90,7 @@ export class UserService {
       const user = await User.findOne({ githubId }).select('+githubAccessToken');
       return user?.githubAccessToken || null;
     } catch (error) {
-      console.error('Error fetching access token:', error);
+      logger.error('Error fetching access token:', error);
       return null;
     }
   }

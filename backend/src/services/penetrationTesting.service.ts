@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios@latest';
 import * as cheerio from 'cheerio';
 import https from 'https';
 

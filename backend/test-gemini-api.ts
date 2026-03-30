@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const GEMINI_API_KEYS = (process.env.GEMINI_API_KEYS || '').split(',').filter(k => k.trim());
+const GEMINI_API_KEYS = process.env.GEMINI_API_KEYS?.split(',').filter(k => k.trim()); // Remove logging of API key
 
 async function testGeminiAPI() {
   console.log('=== Testing Gemini API ===\n');

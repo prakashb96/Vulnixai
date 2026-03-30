@@ -17,7 +17,7 @@ export class MonitoringWorker {
     this.checkAllSites();
 
     // Then run periodically
-    this.interval = setInterval(() => {
+    this.interval = setInterval(() => { try { ... } catch (error) { ... } }, this.CHECK_INTERVAL);
       this.checkAllSites();
     }, this.CHECK_INTERVAL);
 
@@ -43,7 +43,7 @@ export class MonitoringWorker {
       const now = Date.now();
       
       // Filter sites that need checking based on their individual intervals
-      const sitesToCheck = sites.filter(site => {
+      const sitesToCheck = sites.filter(site => { if (!site || !site.checkInterval) return false; ... });
         const lastCheckedTime = new Date(site.lastChecked).getTime();
         const intervalMs = site.checkInterval * 1000;
         return (now - lastCheckedTime) >= intervalMs;

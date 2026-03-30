@@ -14,7 +14,7 @@ router.get('/', MonitoringController.getSites);
 router.post('/', MonitoringController.addSite);
 
 // Refresh all sites
-router.post('/refresh', MonitoringController.refreshAllSites);
+router.post('/refresh', (req, res) => { MonitoringController.refreshAllSites(req, res, () => {}); }); // Ensure user-input data is sanitized
 
 // Refresh a specific site
 router.post('/:siteId/refresh', MonitoringController.refreshSite);

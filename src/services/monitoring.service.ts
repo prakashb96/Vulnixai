@@ -1,4 +1,10 @@
 import { ApiClient } from '@/utils/api';
+const apiClient = new ApiClient({
+  baseURL: 'https://example.com/api',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 
 export interface MonitoredSite {
   _id: string;
@@ -34,7 +40,8 @@ export const monitoringService = {
   },
 
   async refreshSite(siteId: string): Promise<MonitoredSite> {
-    return ApiClient.post(`/api/monitoring/${siteId}/refresh`);
+    const encodedSiteId = encodeURIComponent(siteId);
+    return ApiClient.post(`/api/monitoring/${encodedSiteId}/refresh`);
   },
 
   async refreshAllSites(): Promise<MonitoredSite[]> {
@@ -42,7 +49,8 @@ export const monitoringService = {
   },
 
   async removeSite(siteId: string): Promise<void> {
-    return ApiClient.delete(`/api/monitoring/${siteId}`);
+    const encodedSiteId = encodeURIComponent(siteId);
+    return ApiClient.delete(`/api/monitoring/${encodedSiteId}`);
   },
 
   async updateCheckInterval(siteId: string, checkInterval: number): Promise<MonitoredSite> {

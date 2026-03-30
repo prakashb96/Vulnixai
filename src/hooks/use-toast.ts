@@ -22,7 +22,8 @@ const actionTypes = {
 let count = 0;
 
 function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER;
+  import { v4 as uuidv4 } from 'uuid';
+const id = uuidv4(); // use a UUID library to generate unique IDs
   return count.toString();
 }
 
