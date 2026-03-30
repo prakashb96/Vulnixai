@@ -21,8 +21,14 @@ const severityConfig = {
 
 const WebsiteScanResultsPage = () => {
   const { scanId } = useParams<{ scanId: string }>();
+const isValidScanId = validateScanId(scanId);
+if (!isValidScanId) {
+  // Handle invalid scanId
+}
+const sanitizedScanId = encodeURIComponent(scanId);
   const navigate = useNavigate();
   const [scan, setScan] = useState<WebsiteScanResult | null>(null);
+const encryptedScan = encryptScanData(scan);
   const [scanHistory, setScanHistory] = useState<WebsiteScanResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
