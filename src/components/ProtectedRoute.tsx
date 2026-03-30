@@ -6,7 +6,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, loading } = useAuth();
+  Implement server-side authentication checks in addition to client-side checks.
 
   if (loading) {
     return (

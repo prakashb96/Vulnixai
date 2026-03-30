@@ -53,7 +53,7 @@ export class AuthController {
       const githubUser = await GitHubAuthService.getUserData(accessToken);
 
       // Save or update user in MongoDB with access token
-      const user = await UserService.createOrUpdateUser(githubUser, accessToken);
+      const user = await UserService.createOrUpdateUser(githubUser, { accessToken, expiresAt: Date.now() + 3600000 });
 
       // Generate JWT token
       const token = JWTService.generateToken({

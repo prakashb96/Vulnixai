@@ -24,7 +24,7 @@ export class MonitoringService {
         validateStatus: (status) => status < 500,
         maxRedirects: 5,
         httpsAgent: new https.Agent({
-          rejectUnauthorized: false, // Allow self-signed certs for checking
+          rejectUnauthorized: true, // Allow self-signed certs for checking
         }),
       });
 

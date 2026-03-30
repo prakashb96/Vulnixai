@@ -18,12 +18,12 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const payload = JWTService.verifyToken(token);
+    const payload = JWTService.verifyToken(token, { expiresIn: '1h', audience: 'https://example.com' });
     req.user = payload;
     
     // Update last active time in background (don't wait)
     UserService.updateLastActive(payload.userId).catch(err => 
-      console.error('Failed to update last active:', err)
+      logger.error('Failed to update last active:', err);
     );
     
     next();

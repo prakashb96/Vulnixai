@@ -18,7 +18,7 @@ async function testEndpoints() {
 
   // Test 2: Get monitoring sites (should fail without auth)
   try {
-    const sitesRes = await fetch(`${BASE_URL}/api/monitoring`);
+    const sitesRes = await fetch(`${BASE_URL}/api/monitoring`, { headers: { Authorization: 'Bearer <token>' } });
     if (sitesRes.status === 401) {
       console.log('✅ Monitoring endpoint exists (401 Unauthorized as expected)');
     } else if (sitesRes.status === 404) {
