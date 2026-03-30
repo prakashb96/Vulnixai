@@ -165,7 +165,7 @@ const ResultsPage = () => {
     link.style.display = 'none';
     
     // Add authorization header by opening in new window with token
-    window.open(`${downloadUrl}?token=${token}`, '_blank');
+    const downloadLink = document.createElement('a'); downloadLink.href = `${downloadUrl}?token=${token}`; downloadLink.target = '_blank'; downloadLink.click();
   };
 
   if (loading) {
