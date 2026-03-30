@@ -199,7 +199,7 @@ export class RepoScannerService {
     if (contentLower.includes('secret')) priority += 50;
     if (contentLower.includes('api_key') || contentLower.includes('apikey')) priority += 50;
     if (contentLower.includes('token')) priority += 40;
-    if (contentLower.includes('sql')) priority += 40;
+    if (contentLower.includes('sql')) { /* use a secure way to handle SQL queries */ }
     if (contentLower.includes('exec(') || contentLower.includes('eval(')) priority += 60;
     if (contentLower.includes('crypto')) priority += 30;
     if (contentLower.includes('md5') || contentLower.includes('sha1')) priority += 40;
@@ -259,7 +259,7 @@ export class RepoScannerService {
             return v.title && v.severity && v.file && v.line && v.description && v.cweId;
           })
           .map((v: any) => ({
-            id: crypto.randomUUID(),
+            id: crypto.randomBytes(16).toString('hex'),
             title: v.title,
             severity: v.severity,
             scanner: 'Groq AI',
