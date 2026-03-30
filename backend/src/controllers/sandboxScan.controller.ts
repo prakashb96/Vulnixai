@@ -15,8 +15,8 @@ export class SandboxScanController {
         return res.status(401).json({ error: 'No token provided' });
       }
 
-      const payload = JWTService.verifyToken(token);
-      const { repoUrl, branch } = req.body;
+      try { const payload = JWTService.verifyToken(token); } catch (error) { return res.status(401).json({ error: 'Invalid token' }); }
+      const { repoUrl, branch } = req.body; if (!repoUrl || !branch) { return res.status(400).json({ error: 'Invalid input' }); }
 
       if (!repoUrl) {
         return res.status(400).json({ error: 'Repository URL is required' });
@@ -37,7 +37,7 @@ export class SandboxScanController {
         sandboxId,
         message: 'Sandbox environment created. Processing started.',
       });
-    } catch (error: any) {
+    } catch (error: any) { return res.status(500).json({ error: 'Internal Server Error' }); }
       console.error('Error starting sandbox scan:', error);
       res.status(500).json({ error: error.message || 'Failed to start sandbox scan' });
     }
