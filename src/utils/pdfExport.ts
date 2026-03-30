@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import autoTable from 'jspdf-autotable'; // Ensure the latest versions are used
 
 interface PDFExportOptions {
   title: string;
@@ -26,6 +26,10 @@ export const exportToPDF = (options: PDFExportOptions) => {
 
   // Helper function to clean text from emojis and special characters
   const cleanText = (text: string): string => {
+    // Add input validation and limit the text size to prevent DoS
+    if (text.length > 10000) {
+        throw new Error('Input text is too large');
+    }
     return text
       .replace(/[🔴🟠🟡🔵ℹ️⚠️✅🔍💉🔧🔐📊🚨📋📈🎯✓•═]/g, '')
       .replace(/\s+/g, ' ')
