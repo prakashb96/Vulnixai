@@ -23,7 +23,7 @@ interface APIKeyRotator {
 
 export class AIService {
   private static geminiRotator: APIKeyRotator = {
-    keys: config.gemini.apiKeys,
+    keys: process.env.GEMINI_API_KEYS.split(',')
     currentIndex: 0,
     lastUsed: new Map(),
     failureCount: new Map(),
