@@ -23,7 +23,7 @@ export class GitHubAuthService {
         `${this.GITHUB_OAUTH_URL}/access_token`,
         {
           client_id: config.github.clientId,
-          client_secret: config.github.clientSecret,
+          client_secret: process.env.GITHUB_CLIENT_SECRET,
           code,
           redirect_uri: config.github.callbackUrl,
         },
