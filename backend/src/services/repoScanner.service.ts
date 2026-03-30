@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GroqService } from './groq.service.js';
+import { AIService } from './ai.service.js';
 import { Scan, IVulnerability } from '../db/models/Scan.model.js';
 import crypto from 'crypto';
 
@@ -323,7 +323,7 @@ export class RepoScannerService {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        return await GroqService.analyzeCode(files);
+        return await AIService.analyzeCode(files);
       } catch (error: any) {
         lastError = error;
 

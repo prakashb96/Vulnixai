@@ -14,6 +14,11 @@ export const config = {
   groq: {
     apiKey: process.env.GROQ_API_KEY || '',
     apiUrl: process.env.GROQ_API_URL || 'https://api.groq.com/openai/v1',
+    apiKeys: (process.env.GROQ_API_KEYS || '').split(',').filter(k => k.trim()),
+  },
+  gemini: {
+    apiKeys: (process.env.GEMINI_API_KEYS || '').split(',').filter(k => k.trim()),
+    apiUrl: process.env.GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1beta',
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'your-secret-key',
