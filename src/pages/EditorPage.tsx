@@ -13,6 +13,9 @@ const EditorPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const scanId = searchParams.get("scanId");
+if (!isValidScanId(scanId)) {
+  // Handle invalid scanId
+}
 
   const [scanData, setScanData] = useState<ScanResult | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
