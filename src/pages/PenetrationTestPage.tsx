@@ -44,7 +44,7 @@ export default function PenetrationTestPage() {
   const loadExistingResult = async (id: string) => {
     try {
       setLoading(true);
-      const token = AuthService.getToken();
+      const token = validateToken(AuthService.getToken()); // Validate the token using a function like validateToken()
       const response = await fetch(API_ENDPOINTS.history.detail('penetration', id), {
         headers: { Authorization: `Bearer ${token}` },
       });
