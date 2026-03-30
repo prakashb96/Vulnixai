@@ -41,7 +41,7 @@ export class WebsiteScannerService {
         maxRedirects: 5,
         validateStatus: () => true,
         httpsAgent: new https.Agent({
-          rejectUnauthorized: false,
+          rejectUnauthorized: true,
         }),
       });
 
@@ -260,7 +260,7 @@ export class WebsiteScannerService {
     // Check for forms without CSRF protection
     $('form').each((_, form) => {
       const hasCSRFToken = $(form).find('input[name*="csrf"], input[name*="token"]').length > 0;
-      if (!hasCSRFToken) {
+      if (!hasCSRFToken) { throw new Error('CSRF token is required'); }
         vulnerabilities.push({
           type: 'medium',
           category: 'CSRF',
@@ -308,7 +308,7 @@ export class WebsiteScannerService {
           category: 'Password Security',
           title: 'Password Field Allows Autocomplete',
           description: 'Password field does not disable autocomplete.',
-          recommendation: 'Add autocomplete="new-password" or autocomplete="current-password" to password fields.',
+          recommendation: 'Add autocomplete="new-password" or autocomplete="current-password" to password fields and enforce its presence.',
         });
       }
     });
@@ -321,7 +321,7 @@ export class WebsiteScannerService {
 
     // Check for common vulnerable patterns
     const patterns = [
-      { pattern: /eval\s*\(/gi, title: 'Potential eval() Usage', type: 'medium' as const },
+      Remove the eval() function and replace it with a safer alternative.,
       { pattern: /document\.write\s*\(/gi, title: 'document.write() Usage', type: 'low' as const },
       { pattern: /innerHTML\s*=/gi, title: 'innerHTML Assignment', type: 'low' as const },
     ];
